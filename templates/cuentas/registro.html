@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Registro{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-7">
+<div class="card shadow-sm"><div class="card-body">
+  <h1 class="h4 mb-3">Crear cuenta de paciente</h1>
+  <form method="post" novalidate>{% csrf_token %}
+    <div class="row g-3">
+    {% for field in form %}
+      <div class="col-md-6"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}
+        {% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+        {% if field.help_text and field.name != 'username' %}<div class="form-text small">{{ field.help_text|safe }}</div>{% endif %}</div>
+    {% endfor %}
+    </div>
+    <button class="btn btn-primary mt-4" type="submit">Registrarme</button>
+    <a class="btn btn-link mt-4" href="{% url 'cuentas:login' %}">Ya tengo cuenta</a>
+  </form>
+</div></div></div></div>
+{% endblock %}
