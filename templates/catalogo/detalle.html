@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}{{ p.nombre }}{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb"><ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'catalogo:lista' %}">Catálogo</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'catalogo:lista' %}?especialidad={{ p.especialidad_id }}">{{ p.especialidad.nombre }}</a></li>
+  <li class="breadcrumb-item active">{{ p.nombre }}</li>
+</ol></nav>
+<div class="row g-4">
+  <div class="col-12 col-md-5">
+    {% if p.imagen %}<img src="{{ p.imagen.url }}" class="img-detalle rounded shadow-sm" alt="{{ p.nombre }}">
+    {% else %}<div class="bg-white rounded shadow-sm d-flex align-items-center justify-content-center text-secondary" style="height:300px"><i class="bi {{ p.especialidad.icono }} display-1"></i></div>{% endif %}
+  </div>
+  <div class="col-12 col-md-7">
+    <span class="badge text-bg-info">{{ p.especialidad.nombre }}</span>
+    <h1 class="h3 mt-2">{{ p.nombre }}</h1>
+    <p class="text-muted">Código {{ p.codigo }}</p>
+    <p>{{ p.descripcion|linebreaksbr }}</p>
+    {% if p.requisitos %}<div class="alert alert-secondary"><strong>Requisitos previos:</strong><br>{{ p.requisitos|linebreaksbr }}</div>{% endif %}
+    <ul class="list-unstyled">
+      <li><i class="bi bi-clock"></i> Duración: <strong>{{ p.duracion_minutos }} min</strong></li>
+      <li><i class="bi bi-people"></i> Cupos: <strong>{{ p.cupos_diarios }}</strong></li>
+      <li><i class="bi bi-info-circle"></i> Estado: <strong>{{ p.get_estado_display }}</strong></li>
+    </ul>
+    <p class="display-6 text-primary">${{ p.arancel|floatformat:0 }}</p>
+    {% if p.reservable %}
+    <form method="post" action="{% url 'catalogo:canasta_agregar' p.pk %}" class="row g-2 align-items-center">{% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'catalogo:canasta' %}">
+      <div class="col-auto"><input type="number" name="cantidad" value="1" min="1" max="5" class="form-control" style="width:90px" aria-label="Cantidad"></div>
+      <div class="col-auto"><button class="btn btn-primary" type="submit"><i class="bi bi-basket3"></i> Agregar a la canasta</button></div>
+    </form>
+    {% else %}<div class="alert alert-warning">Esta prestación no está disponible para agendar por ahora.</div>{% endif %}
+    {% if user.is_staff %}<a class="btn btn-outline-secondary btn-sm mt-3" href="{% url 'catalogo:editar' p.pk %}">Editar</a>{% endif %}
+  </div>
+</div>
+{% endblock %}

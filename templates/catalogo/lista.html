@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Catálogo{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Catálogo de prestaciones y exámenes</h1>
+  {% if user.is_staff %}<a class="btn btn-success" href="{% url 'catalogo:crear' %}"><i class="bi bi-plus-lg"></i> Nueva prestación</a>{% endif %}
+</div>
+
+<form class="card card-body mb-4 shadow-sm" method="get">
+  <div class="row g-2">
+    <div class="col-12 col-md-5">
+      <input type="search" name="q" value="{{ q }}" class="form-control" placeholder="Buscar por nombre, código o descripción">
+    </div>
+    <div class="col-6 col-md-3">
+      <select name="especialidad" class="form-select" aria-label="Especialidad">
+        <option value="">Todas las especialidades</option>
+        {% for e in especialidades %}<option value="{{ e.pk }}" {% if esp == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.nombre }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-md-2">
+      <select name="orden" class="form-select" aria-label="Orden">
+        <option value="nombre" {% if orden == 'nombre' %}selected{% endif %}>Nombre</option>
+        <option value="precio_asc" {% if orden == 'precio_asc' %}selected{% endif %}>Menor arancel</option>
+        <option value="precio_desc" {% if orden == 'precio_desc' %}selected{% endif %}>Mayor arancel</option>
+        <option value="duracion" {% if orden == 'duracion' %}selected{% endif %}>Duración</option>
+      </select>
+    </div>
+    <div class="col-12 col-md-2 d-grid"><button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> Buscar</button></div>
+  </div>
+</form>
+
+{% if page.object_list %}
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+  {% for p in page %}
+  <div class="col">
+    <div class="card h-100 card-prestacion shadow-sm">
+      {% if p.imagen %}<img src="{{ p.imagen.url }}" class="card-img-top placeholder-img" alt="{{ p.nombre }}">
+      {% else %}<div class="card-img-top placeholder-img d-flex align-items-center justify-content-center text-secondary"><i class="bi {{ p.especialidad.icono }} display-3"></i></div>{% endif %}
+      <div class="card-body">
+        <span class="badge text-bg-info mb-2">{{ p.especialidad.nombre }}</span>
+        <h2 class="h5 card-title">{{ p.nombre }}</h2>
+        <p class="text-muted small mb-1">Código: {{ p.codigo }} &middot; {{ p.duracion_minutos }} min</p>
+        <p class="card-text small">{{ p.descripcion|truncatechars:90 }}</p>
+        <p class="fs-5 fw-bold text-primary mb-1">${{ p.arancel|floatformat:0 }}</p>
+        {% if p.reservable %}<span class="badge text-bg-success">{{ p.cupos_diarios }} cupos</span>
+        {% else %}<span class="badge text-bg-secondary">{{ p.get_estado_display }}</span>{% endif %}
+      </div>
+      <div class="card-footer bg-white d-flex gap-2">
+        <a class="btn btn-outline-primary btn-sm flex-fill" href="{{ p.get_absolute_url }}">Ver detalle</a>
+        {% if p.reservable %}
+        <form method="post" action="{% url 'catalogo:canasta_agregar' p.pk %}" class="flex-fill">{% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button class="btn btn-primary btn-sm w-100" type="submit"><i class="bi bi-basket3"></i> Agregar</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% if page.has_other_pages %}
+<nav class="mt-4" aria-label="Paginación"><ul class="pagination justify-content-center flex-wrap">
+  {% if page.has_previous %}<li class="page-item"><a class="page-link" href="?{{ querystring }}&page={{ page.previous_page_number }}">&laquo;</a></li>{% endif %}
+  {% for n in page.paginator.page_range %}
+  <li class="page-item {% if n == page.number %}active{% endif %}"><a class="page-link" href="?{{ querystring }}&page={{ n }}">{{ n }}</a></li>
+  {% endfor %}
+  {% if page.has_next %}<li class="page-item"><a class="page-link" href="?{{ querystring }}&page={{ page.next_page_number }}">&raquo;</a></li>{% endif %}
+</ul></nav>
+{% endif %}
+{% else %}
+<div class="alert alert-warning">No se encontraron prestaciones con los criterios indicados.</div>
+{% endif %}
+{% endblock %}

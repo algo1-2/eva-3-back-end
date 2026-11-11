@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Confirmar baja{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-7">
+<div class="card border-danger shadow-sm"><div class="card-body text-center">
+  <i class="bi bi-exclamation-triangle text-danger display-4"></i>
+  <h1 class="h4 mt-2">¿Dar de baja esta prestación?</h1>
+  <p><strong>{{ p.codigo }} - {{ p.nombre }}</strong></p>
+  <p class="text-muted">Dejará de mostrarse en el catálogo público, pero se conserva en la base de datos y podrá reactivarse.</p>
+  <form method="post" class="d-flex justify-content-center gap-2">{% csrf_token %}
+    <button class="btn btn-danger" type="submit">Sí, dar de baja</button>
+    <a class="btn btn-outline-secondary" href="{% url 'catalogo:gestion' %}">Cancelar</a>
+  </form>
+</div></div></div></div>
+{% endblock %}
