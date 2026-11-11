@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Mi canasta{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3"><i class="bi bi-basket3-fill"></i> Canasta de exámenes y pre-agendamiento</h1>
+{% if c.lineas %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="table-responsive bg-white shadow-sm rounded">
+    <table class="table align-middle mb-0">
+      <thead class="table-light"><tr><th>Prestación</th><th class="text-end">Arancel</th><th style="width:150px">Cantidad</th><th class="text-end">Subtotal</th><th class="text-end">Copago</th><th></th></tr></thead>
+      <tbody>
+      {% for l in c.lineas %}
+      <tr>
+        <td><a href="{{ l.prestacion.get_absolute_url }}" class="fw-semibold text-decoration-none">{{ l.prestacion.nombre }}</a><br><small class="text-muted">{{ l.prestacion.especialidad }} &middot; {{ l.prestacion.duracion_minutos }} min</small></td>
+        <td class="text-end">${{ l.prestacion.arancel|floatformat:0 }}</td>
+        <td>
+          <form method="post" action="{% url 'catalogo:canasta_modificar' l.prestacion.pk %}" class="input-group input-group-sm">{% csrf_token %}
+            <input type="number" name="cantidad" value="{{ l.cantidad }}" min="0" max="5" class="form-control" aria-label="Cantidad">
+            <button class="btn btn-outline-primary" type="submit" title="Actualizar"><i class="bi bi-check2"></i></button>
+          </form>
+        </td>
+        <td class="text-end">${{ l.subtotal|floatformat:0 }}</td>
+        <td class="text-end fw-semibold">${{ l.copago|floatformat:0 }}</td>
+        <td class="text-end">
+          <form method="post" action="{% url 'catalogo:canasta_quitar' l.prestacion.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit" title="Quitar"><i class="bi bi-trash"></i></button></form>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    <form method="post" action="{% url 'catalogo:canasta_vaciar' %}" class="mt-3">{% csrf_token %}
+      <button class="btn btn-outline-secondary btn-sm" type="submit"><i class="bi bi-x-circle"></i> Vaciar canasta</button>
+      <a class="btn btn-link btn-sm" href="{% url 'catalogo:lista' %}">Seguir agregando</a>
+    </form>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow-sm"><div class="card-body">
+      <h2 class="h5">Resumen del copago</h2>
+      <form method="post" action="{% url 'catalogo:canasta_prevision' %}" class="mb-3">{% csrf_token %}
+        <label class="form-label small" for="prevision">Previsión de salud</label>
+        <div class="input-group input-group-sm">
+          <select name="prevision" id="prevision" class="form-select">
+            <option value="FONASA" {% if c.prevision == 'FONASA' %}selected{% endif %}>Fonasa (60%)</option>
+            <option value="ISAPRE" {% if c.prevision == 'ISAPRE' %}selected{% endif %}>Isapre (70%)</option>
+            <option value="PARTICULAR" {% if c.prevision == 'PARTICULAR' %}selected{% endif %}>Particular (0%)</option>
+          </select>
+          <button class="btn btn-outline-primary" type="submit">Aplicar</button>
+        </div>
+      </form>
+      <dl class="row mb-0">
+        <dt class="col-7">Exámenes</dt><dd class="col-5 text-end">{{ c.cantidad_total }}</dd>
+        <dt class="col-7">Duración estimada</dt><dd class="col-5 text-end">{{ c.duracion_total }} min</dd>
+        <dt class="col-7">Subtotal (arancel)</dt><dd class="col-5 text-end">${{ c.subtotal|floatformat:0 }}</dd>
+        <dt class="col-7">Bonificación {{ c.cobertura_pct }}%</dt><dd class="col-5 text-end text-success">-${{ c.bonificacion|floatformat:0 }}</dd>
+      </dl>
+      <hr>
+      <div class="d-flex justify-content-between fs-5 fw-bold"><span>Copago total</span><span class="text-primary">${{ c.copago_total|floatformat:0 }}</span></div>
+      <p class="small text-muted mt-2">Valores referenciales. Las prestaciones de salud están exentas de IVA.</p>
+      <form method="post" action="{% url 'catalogo:canasta_confirmar' %}" class="d-grid">{% csrf_token %}
+        <button class="btn btn-success" type="submit"><i class="bi bi-calendar-check"></i> Confirmar pre-agendamiento</button>
+      </form>
+      {% if not user.is_authenticated %}<p class="small text-muted mt-2 mb-0">Deberás <a href="{% url 'cuentas:login' %}?next={% url 'catalogo:canasta' %}">iniciar sesión</a> para confirmar.</p>{% endif %}
+    </div></div>
+  </div>
+</div>
+{% else %}
+<div class="alert alert-info">Tu canasta está vacía. <a href="{% url 'catalogo:lista' %}" class="alert-link">Explora el catálogo</a> para agregar exámenes.</div>
+{% endif %}
+{% endblock %}

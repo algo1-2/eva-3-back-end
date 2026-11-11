@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Comprobante{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-8">
+<div class="card shadow-sm"><div class="card-body">
+  <div class="text-center mb-3">
+    <i class="bi bi-check-circle-fill text-success display-4"></i>
+    <h1 class="h4 mt-2">Solicitud de pre-agendamiento registrada</h1>
+    <p class="text-muted mb-0">Comprobante simulado N° <strong>{{ comprobante }}</strong><br>{{ fecha|date:"d/m/Y H:i" }} &middot; Paciente: {{ user.get_full_name|default:user.get_username }}</p>
+  </div>
+  <table class="table table-sm">
+    <thead><tr><th>Prestación</th><th class="text-center">Cant.</th><th class="text-end">Subtotal</th><th class="text-end">Copago</th></tr></thead>
+    <tbody>{% for l in c.lineas %}<tr><td>{{ l.prestacion.nombre }}</td><td class="text-center">{{ l.cantidad }}</td><td class="text-end">${{ l.subtotal|floatformat:0 }}</td><td class="text-end">${{ l.copago|floatformat:0 }}</td></tr>{% endfor %}</tbody>
+    <tfoot>
+      <tr><td colspan="3" class="text-end">Subtotal</td><td class="text-end">${{ c.subtotal|floatformat:0 }}</td></tr>
+      <tr><td colspan="3" class="text-end">Bonificación {{ c.prevision }} ({{ c.cobertura_pct }}%)</td><td class="text-end">-${{ c.bonificacion|floatformat:0 }}</td></tr>
+      <tr class="fw-bold"><td colspan="3" class="text-end">Copago total</td><td class="text-end">${{ c.copago_total|floatformat:0 }}</td></tr>
+    </tfoot>
+  </table>
+  <p class="small text-muted">Este documento es una simulación y no constituye una reserva efectiva de hora.</p>
+  <div class="text-center"><a class="btn btn-primary" href="{% url 'catalogo:lista' %}">Volver al catálogo</a></div>
+</div></div></div></div>
+{% endblock %}
