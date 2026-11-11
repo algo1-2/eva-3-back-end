@@ -1,0 +1,5 @@
+.card-prestacion { transition: transform .15s, box-shadow .15s; }
+.card-prestacion:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); }
+.card-img-top.placeholder-img { height: 180px; object-fit: cover; background: #e9ecef; }
+.img-detalle { max-height: 360px; object-fit: cover; width: 100%; }
+.miniatura { width: 48px; height: 48px; object-fit: cover; border-radius: .375rem; }
