@@ -6,7 +6,7 @@
 |---|---|
 | **Nombre de la Organización o Plataforma** | SaludVital |
 | **Modelo de Negocio / Giro** | Centro de atención médica ambulatoria |
-| **Integrantes del Equipo** | Benjamín Rivas Bustos – RUT: *(completar)* |
+| **Integrantes del Equipo** | Benjamín Rivas Bustos – RUT: 21460164-8 |
 | **Entidad de Contexto / Agrupación (ORM)** | `Especialidad` |
 | **Entidad Principal Gestionable (ORM)** | `Prestacion` |
 | **Propósito de la Sesión (`request.session`)** | Canasta de exámenes: pre-agendamiento temporal de prestaciones con control de cupos y cálculo de copago estimado según previsión (Fonasa / Isapre / Particular) |
