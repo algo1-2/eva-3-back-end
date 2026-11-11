@@ -68,10 +68,8 @@ class CanastaTests(BaseTest):
     def test_agregar_y_cupos(self):
         self.client.post(reverse('catalogo:canasta_agregar', args=[self.p1.pk]), {'cantidad': 2})
         self.assertEqual(self.client.session['canasta'], {str(self.p1.pk): 2})
-        # Excede cupos (3)
         self.client.post(reverse('catalogo:canasta_agregar', args=[self.p1.pk]), {'cantidad': 2})
         self.assertEqual(self.client.session['canasta'][str(self.p1.pk)], 2)
-        # Sin cupos
         self.client.post(reverse('catalogo:canasta_agregar', args=[self.p2.pk]))
         self.assertNotIn(str(self.p2.pk), self.client.session['canasta'])
 
@@ -100,7 +98,6 @@ class CanastaTests(BaseTest):
         self.assertEqual(r.status_code, 302)
         self.assertIn('canasta', self.client.session)
         self.client.login(username='pac', password='x12345678')
-        # el login rota la sesión conservando datos
         r = self.client.post(reverse('catalogo:canasta_confirmar'))
         self.assertContains(r, 'Comprobante simulado')
         self.assertNotIn('canasta', self.client.session)

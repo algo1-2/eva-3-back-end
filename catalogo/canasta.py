@@ -1,17 +1,10 @@
-"""
-Canasta de exámenes almacenada en request.session (sin persistencia en BD).
-
-Estructura en sesión:
-    request.session['canasta']    = {'<id_prestacion>': cantidad, ...}
-    request.session['prevision']  = 'FONASA' | 'ISAPRE' | 'PARTICULAR'
-"""
 from decimal import Decimal, ROUND_HALF_UP
 
 from .models import Prestacion
 
 CLAVE = 'canasta'
 CLAVE_PREVISION = 'prevision'
-MAX_POR_ITEM = 5  # Tope de unidades de una misma prestación por solicitud.
+MAX_POR_ITEM = 5
 
 
 def _canasta(request):
@@ -24,7 +17,6 @@ def _guardar(request, canasta):
 
 
 def prevision_actual(request):
-    """Previsión elegida en sesión; por defecto la del perfil o Particular."""
     if CLAVE_PREVISION in request.session:
         return request.session[CLAVE_PREVISION]
     perfil = getattr(request.user, 'perfil', None) if request.user.is_authenticated else None
@@ -45,7 +37,6 @@ def cantidad_total(request):
 
 
 def agregar(request, prestacion, cantidad=1):
-    """Agrega validando vigencia, estado y cupos. Devuelve (ok, mensaje)."""
     if not prestacion.reservable:
         return False, f'«{prestacion.nombre}» no está disponible para agendar.'
     canasta = _canasta(request)
@@ -60,7 +51,6 @@ def agregar(request, prestacion, cantidad=1):
 
 
 def modificar(request, prestacion, cantidad):
-    """Fija la cantidad exacta; 0 elimina el ítem. Devuelve (ok, mensaje)."""
     canasta = _canasta(request)
     clave = str(prestacion.pk)
     if clave not in canasta:
@@ -93,7 +83,6 @@ def _redondeo(valor):
 
 
 def detalle(request):
-    """Calcula líneas y totales a partir de la sesión y precios vigentes en BD."""
     from cuentas.models import Perfil
 
     canasta = _canasta(request)

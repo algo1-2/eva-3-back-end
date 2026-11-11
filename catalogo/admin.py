@@ -2,7 +2,6 @@ from django.contrib import admin
 
 from .models import Especialidad, Prestacion
 
-# Identidad corporativa del panel de administración.
 admin.site.site_header = 'SaludVital - Panel de Control'
 admin.site.site_title = 'SaludVital Admin'
 admin.site.index_title = 'Gestión Operativa de Recursos y Servicios'

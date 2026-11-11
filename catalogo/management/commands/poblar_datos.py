@@ -17,7 +17,6 @@ ESPECIALIDADES = [
     ('Nutrición', 'Evaluación nutricional y planes alimentarios.', 'bi-apple', (230, 126, 34)),
 ]
 
-# (código, especialidad, nombre, descripción, requisitos, arancel, minutos, cupos, estado)
 PRESTACIONES = [
     ('CAR-001', 'Cardiología', 'Electrocardiograma de reposo', 'Registro de la actividad eléctrica del corazón en reposo.', 'Evitar cremas en el pecho el día del examen.', 25000, 20, 12, 'DISPONIBLE'),
     ('CAR-002', 'Cardiología', 'Test de esfuerzo', 'Evaluación de la respuesta cardíaca durante ejercicio controlado.', 'Ropa cómoda, ayuno de 3 horas. Traer zapatillas.', 68000, 45, 5, 'DISPONIBLE'),
@@ -35,7 +34,6 @@ PRESTACIONES = [
 
 
 def _imagen(titulo, color):
-    """Genera una imagen ilustrativa con Pillow (no requiere archivos externos)."""
     img = Image.new('RGB', (600, 400), color)
     d = ImageDraw.Draw(img)
     d.ellipse((220, 90, 380, 250), outline='white', width=8)
@@ -69,7 +67,6 @@ class Command(BaseCommand):
                 p.imagen.save(f'{cod.lower()}.jpg', _imagen(nombre, colores[enombre]), save=True)
                 creadas += 1
 
-        # Usuarios de prueba
         if not User.objects.filter(username='admin').exists():
             admin = User.objects.create_superuser(
                 'admin', 'admin@saludvital.cl', 'Admin12345!', first_name='Administrador', last_name='SaludVital')

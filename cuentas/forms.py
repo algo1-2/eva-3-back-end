@@ -8,7 +8,6 @@ from .models import Perfil
 
 
 def validar_rut(rut):
-    """Normaliza y valida un RUT chileno con dígito verificador (módulo 11)."""
     limpio = re.sub(r'[.\s]', '', rut).upper()
     if not re.fullmatch(r'\d{7,8}-[\dK]', limpio):
         raise forms.ValidationError('Formato de RUT inválido. Ej.: 12345678-5')

@@ -3,7 +3,6 @@ from django.db import models
 
 
 class Perfil(models.Model):
-    """Perfil complementario del usuario (RUT, teléfono, rol y previsión)."""
 
     class Rol(models.TextChoices):
         PACIENTE = 'PACIENTE', 'Paciente'
@@ -15,7 +14,6 @@ class Perfil(models.Model):
         ISAPRE = 'ISAPRE', 'Isapre'
         PARTICULAR = 'PARTICULAR', 'Particular (sin previsión)'
 
-    # Porcentaje del arancel que cubre la previsión (valores referenciales).
     COBERTURA = {'FONASA': 60, 'ISAPRE': 70, 'PARTICULAR': 0}
 
     usuario = models.OneToOneField(

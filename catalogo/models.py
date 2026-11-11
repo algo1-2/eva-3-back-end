@@ -7,7 +7,6 @@ from django.utils.text import slugify
 
 
 class Especialidad(models.Model):
-    """Entidad de contexto: clasifica las prestaciones (Cardiología, etc.)."""
     nombre = models.CharField('Nombre', max_length=80, unique=True)
     descripcion = models.TextField('Descripción', blank=True)
     icono = models.CharField(
@@ -25,7 +24,6 @@ class Especialidad(models.Model):
 
 
 class Prestacion(models.Model):
-    """Entidad principal gestionable: examen o prestación clínica."""
 
     class Estado(models.TextChoices):
         DISPONIBLE = 'DISPONIBLE', 'Disponible'
@@ -51,7 +49,6 @@ class Prestacion(models.Model):
     estado = models.CharField(
         'Estado', max_length=12, choices=Estado.choices, default=Estado.DISPONIBLE)
     imagen = models.ImageField('Imagen', upload_to='prestaciones/', blank=True, null=True)
-    # Baja lógica: permite desactivar sin borrar físicamente.
     activo = models.BooleanField('Vigente', default=True)
     creado = models.DateTimeField(auto_now_add=True)
     actualizado = models.DateTimeField(auto_now=True)
@@ -74,5 +71,4 @@ class Prestacion(models.Model):
 
     @property
     def reservable(self):
-        """Se puede agregar a la canasta solo si está vigente, disponible y con cupos."""
         return self.activo and self.estado == self.Estado.DISPONIBLE and self.cupos_diarios > 0

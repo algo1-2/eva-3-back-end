@@ -1,7 +1,3 @@
-"""
-Configuración de SaludVital (Django 4.2 LTS).
-Las variables sensibles se leen desde el archivo .env mediante python-dotenv.
-"""
 import os
 from pathlib import Path
 
@@ -9,7 +5,6 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Carga las variables de entorno definidas en .env (no se versiona en Git).
 load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'clave-insegura-solo-para-desarrollo')
@@ -50,7 +45,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # Context Processor propio: contador de la canasta en el Navbar.
                 'catalogo.context_processors.canasta_global',
             ],
         },
@@ -59,7 +53,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# --- Base de datos (configurable por .env; SQLite por defecto) ---
 DB_ENGINE = os.getenv('DB_ENGINE', 'django.db.backends.sqlite3')
 if DB_ENGINE.endswith('sqlite3'):
     DATABASES = {
@@ -99,15 +92,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --- Autenticación ---
 LOGIN_URL = 'cuentas:login'
 LOGIN_REDIRECT_URL = 'catalogo:lista'
 LOGOUT_REDIRECT_URL = 'catalogo:lista'
 
-# Sesión: expira a las 2 horas de inactividad.
 SESSION_COOKIE_AGE = 60 * 60 * 2
 SESSION_COOKIE_HTTPONLY = True
 
-# Estilos de mensajes alineados con las clases de alertas de Bootstrap 5.
-from django.contrib.messages import constants as messages_constants  # noqa: E402
+from django.contrib.messages import constants as messages_constants
 MESSAGE_TAGS = {messages_constants.ERROR: 'danger'}

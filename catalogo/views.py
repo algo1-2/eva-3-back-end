@@ -20,9 +20,7 @@ ORDENES = {
 }
 
 
-# ---------------------------------------------------------------- READ
 def lista(request):
-    """Catálogo público: búsqueda multi-campo (Q), filtro, orden y paginación."""
     q = request.GET.get('q', '').strip()
     esp = request.GET.get('especialidad', '')
     orden = request.GET.get('orden', 'nombre')
@@ -51,11 +49,9 @@ def detalle(request, slug):
     return render(request, 'catalogo/detalle.html', {'p': prestacion})
 
 
-# ------------------------------------------------- CRUD (solo personal)
 @login_required
 @es_personal
 def gestion(request):
-    """Panel operativo: lista todas las prestaciones, incluidas las dadas de baja."""
     q = request.GET.get('q', '').strip()
     qs = Prestacion.objects.select_related('especialidad')
     if q:
@@ -90,7 +86,6 @@ def editar(request, pk):
 @login_required
 @es_personal
 def eliminar(request, pk):
-    """Confirmación previa y baja lógica (el registro no se destruye)."""
     p = get_object_or_404(Prestacion, pk=pk)
     if request.method == 'POST':
         p.activo = False
@@ -111,7 +106,6 @@ def reactivar(request, pk):
     return redirect('catalogo:gestion')
 
 
-# ------------------------------------------------- Canasta (sesión)
 def _cantidad(request, defecto=1):
     try:
         return int(request.POST.get('cantidad', defecto))
@@ -173,7 +167,6 @@ def canasta_prevision(request):
 @login_required
 @require_POST
 def canasta_confirmar(request):
-    """Genera un comprobante simulado y vacía la sesión."""
     c = cs.detalle(request)
     if not c['lineas']:
         messages.error(request, 'Tu canasta está vacía.')

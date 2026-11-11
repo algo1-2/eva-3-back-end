@@ -8,14 +8,12 @@ urlpatterns = [
     path('', views.lista, name='lista'),
     path('prestacion/<slug:slug>/', views.detalle, name='detalle'),
 
-    # CRUD protegido (personal)
     path('gestion/', views.gestion, name='gestion'),
     path('gestion/nueva/', views.crear, name='crear'),
     path('gestion/<int:pk>/editar/', views.editar, name='editar'),
     path('gestion/<int:pk>/baja/', views.eliminar, name='eliminar'),
     path('gestion/<int:pk>/reactivar/', views.reactivar, name='reactivar'),
 
-    # Canasta en sesión
     path('canasta/', views.canasta_ver, name='canasta'),
     path('canasta/agregar/<int:pk>/', views.canasta_agregar, name='canasta_agregar'),
     path('canasta/modificar/<int:pk>/', views.canasta_modificar, name='canasta_modificar'),
