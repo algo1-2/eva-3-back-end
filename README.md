@@ -101,32 +101,13 @@ Pruebas automatizadas: `python manage.py test` (13 pruebas: modelos, catálogo, 
 
 ## 6. Bitácora de uso de Inteligencia Artificial
 
-Se utilizó un asistente de IA como apoyo para arquitectura, ORM y seguridad. Cada respuesta fue revisada, comprendida y adaptada al dominio antes de incorporarse.
+Se usó un asistente de IA para generar el código base del proyecto a partir de las instrucciones de la evaluación. Los prompts de abajo corresponden a las consultas realizadas; el resultado fue revisado y probado antes de entregarse.
 
-### Prompt 1 – Arquitectura
-
-**Prompt:** *«Estoy desarrollando en Django 4.2 un sistema de pre-agendamiento de exámenes médicos con catálogo público, canasta en `request.session` y backoffice por roles. Propón la estructura de apps y la separación de responsabilidades.»*
-
-**Respuesta técnica:** Sugirió separar `catalogo` (dominio y canasta) y `cuentas` (usuarios), mover la lógica de la sesión a un módulo propio en lugar de las vistas y exponer el contador mediante un *context processor*.
-
-**Adaptación aplicada:** Se creó `catalogo/canasta.py` como capa de servicio con funciones `agregar`, `modificar`, `quitar`, `vaciar` y `detalle`. En la sesión solo se guarda `{id: cantidad}`; precios y estado se consultan siempre desde la BD para evitar datos obsoletos o manipulados. Se descartó la sugerencia de una tercera app para el backoffice, ya que sería sobreingeniería para este alcance.
-
-### Prompt 2 – ORM
-
-**Prompt:** *«Diseña los modelos Django para Especialidad y Prestacion con ForeignKey PROTECT, validadores numéricos, choices, imagen y baja lógica. ¿Cómo optimizo las consultas del catálogo?»*
-
-**Respuesta técnica:** Propuso `TextChoices` para el estado, `MinValueValidator`, un campo `activo` para baja lógica y usar `select_related('especialidad')` para evitar consultas N+1 en listados.
-
-**Adaptación aplicada:** Se generó el `slug` automáticamente en `save()` a partir del código y nombre. Se agregó la propiedad `reservable` (activo + disponible + cupos > 0). Se usó `select_related` en catálogo, gestión y canasta, y `list_select_related` en el admin. Se cambió el arancel a `DecimalField` sin decimales (CLP) en lugar de `FloatField` para evitar errores de redondeo.
-
-### Prompt 3 – Seguridad
-
-**Prompt:** *«Revisa la seguridad de mi app Django: control de acceso por rol, CSRF, manejo de logout y redirecciones con el parámetro next.»*
-
-**Respuesta técnica:** Recomendó proteger vistas con `@login_required` y `@user_passes_test`, usar logout por POST, restringir métodos con `require_POST` y validar que `next` sea una ruta interna.
-
-**Adaptación aplicada:** El logout es un formulario POST con CSRF en el navbar. La función `_volver` solo acepta rutas que comienzan con `/` y no con `//`. Se añadieron pruebas automatizadas que verifican que un usuario sin rol de personal no accede a `gestion`. Se agregó validación de RUT (módulo 11), que no estaba en la propuesta original.
-
+| N° | Área | Prompt utilizado | Respuesta técnica | Adaptación y revisión |
+|---|---|---|---|---|
+| 1 | Arquitectura | "Necesito realizar este trabajo completo" (adjuntando la pauta de la Evaluación Sumativa 3) y elección del tema: centro médico con canasta de exámenes y copago. | Estructura en dos apps (`catalogo` y `cuentas`), lógica de la canasta separada en `canasta.py` y *context processor* para el contador del navbar. | Se eligió el tema y la previsión como base del copago. Se verificó que cumpliera los módulos de la pauta. |
+| 2 | ORM | Mismo requerimiento, módulo 1: modelos con relación, validadores, estados, imagen y baja lógica. | Modelos `Especialidad` y `Prestacion` con `ForeignKey(PROTECT)`, `MinValueValidator`, `choices`, `ImageField`, `activo` y `select_related` en las consultas. | Se revisaron los campos para el giro médico y se probó el comando `poblar_datos` y las migraciones. |
+| 3 | Seguridad | Mismo requerimiento, módulo 4: autenticación, roles y CSRF. | Registro, login y logout (este último por POST), `@login_required`, `@user_passes_test(is_staff)`, `require_POST`, validación de RUT y del parámetro `next`. | Se ejecutaron las pruebas automáticas (13) que comprueban el acceso por rol y el flujo de sesión. |
 ## 7. Control de versiones
 
 Repositorio Git con commits descriptivos por módulo (entorno, modelos, admin, CRUD, sesión/canasta, autenticación, documentación y pruebas).
